@@ -6,14 +6,15 @@
   <title>EchoPal 产品界面</title>
   <style>
     :root {
-      --ink: #25211e;
-      --muted: #756a60;
+      --ink: #251f1b;
+      --muted: #74695f;
       --paper: #fff8ed;
-      --line: rgba(54, 43, 34, .16);
+      --line: rgba(66, 49, 37, .16);
       --green: #24463d;
-      --green-2: #587a6b;
+      --green-2: #5f806f;
       --rose: #bf6f67;
-      --gold: #c89a45;
+      --gold: #c79a45;
+      --blue: #55758c;
       --bg: #efe2d2;
     }
 
@@ -27,9 +28,10 @@
       color: var(--ink);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 82% 14%, rgba(191, 111, 103, .16), transparent 28%),
-        radial-gradient(circle at 10% 84%, rgba(88, 122, 107, .16), transparent 30%),
-        var(--bg);
+        radial-gradient(circle at 82% 12%, rgba(191, 111, 103, .18), transparent 26%),
+        radial-gradient(circle at 12% 84%, rgba(95, 128, 111, .2), transparent 30%),
+        linear-gradient(135deg, #f3e7d8, #dfcfbd);
+      overflow-x: hidden;
     }
 
     button,
@@ -43,10 +45,16 @@
       cursor: pointer;
     }
 
+    a {
+      color: var(--green);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .shell {
-      width: min(1080px, calc(100% - 32px));
+      width: min(1120px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 32px 0;
+      padding: 28px 0 36px;
     }
 
     .topbar {
@@ -54,7 +62,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .brand {
@@ -74,78 +82,122 @@
       background: var(--green);
     }
 
-    a {
-      color: var(--green);
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .app-shell {
+    .layout {
       display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(0, .86fr) minmax(360px, .62fr);
+      align-items: center;
+      gap: clamp(24px, 5vw, 70px);
+      min-height: calc(100vh - 112px);
     }
 
-    .panel,
-    .workspace {
-      border: 1px solid rgba(255, 248, 237, .62);
-      border-radius: 26px;
-      background: rgba(255, 248, 237, .78);
-      box-shadow: 0 26px 70px rgba(55, 43, 33, .13);
-      backdrop-filter: blur(18px);
+    .copy h1 {
+      max-width: 620px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.12;
+      letter-spacing: 0;
     }
 
-    .panel {
-      padding: 22px;
-      align-self: start;
+    .copy p {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      min-height: 720px;
+      margin: 0 auto;
+      padding: 14px;
+      border: 10px solid #181715;
+      border-radius: 44px;
+      background: #181715;
+      box-shadow: 0 40px 100px rgba(45, 34, 26, .28);
+    }
+
+    .screen {
+      position: relative;
+      min-height: 672px;
+      overflow: hidden;
+      border-radius: 31px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .7), transparent 36%),
+        linear-gradient(180deg, #fff8ed, #f0dfca);
+    }
+
+    .screen:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .35;
+      background-image: radial-gradient(rgba(54, 43, 34, .13) 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      padding: 28px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .view.leaving {
+      opacity: 0;
+      transform: translateY(-26px) scale(.98);
+    }
+
+    .date-pill {
+      justify-self: center;
+      margin-bottom: 18px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .58);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .check-view {
+      text-align: center;
     }
 
     .streak {
-      margin: 0 0 6px;
-      font-size: 46px;
-      line-height: 1;
+      margin: 0;
+      font-size: 88px;
+      line-height: .92;
+      letter-spacing: 0;
     }
 
-    .muted {
+    .streak-label {
+      margin: 12px 0 30px;
       color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .primary,
-    .soft-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      padding: 0 18px;
-      border-radius: 999px;
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .primary {
-      color: #fff;
-      background: var(--green);
-      box-shadow: 0 16px 34px rgba(36, 70, 61, .22);
-    }
-
-    .soft-button {
-      color: var(--ink);
-      border: 1px solid var(--line);
-      background: rgba(255, 248, 237, .78);
+      font-weight: 800;
     }
 
     .check-card {
-      margin-top: 22px;
       perspective: 900px;
     }
 
     .check-button {
       position: relative;
       width: 100%;
-      min-height: 118px;
-      border-radius: 24px;
+      min-height: 168px;
+      border-radius: 32px;
       color: #fff;
       background: transparent;
       transform-style: preserve-3d;
@@ -158,7 +210,7 @@
 
     .check-button.fading {
       opacity: 0;
-      translate: 0 -14px;
+      translate: 0 -20px;
       pointer-events: none;
     }
 
@@ -167,146 +219,177 @@
       inset: 0;
       display: grid;
       place-items: center;
-      padding: 18px;
+      padding: 24px;
       border-radius: inherit;
       backface-visibility: hidden;
-      background: var(--green);
-      box-shadow: 0 18px 36px rgba(36, 70, 61, .22);
-      font-size: 24px;
+      background:
+        radial-gradient(circle at 72% 22%, rgba(255, 255, 255, .2), transparent 30%),
+        var(--green);
+      box-shadow: 0 20px 42px rgba(36, 70, 61, .24);
+      font-size: 28px;
       font-weight: 900;
     }
 
     .check-back {
-      background: var(--rose);
+      background:
+        radial-gradient(circle at 26% 22%, rgba(255, 255, 255, .22), transparent 30%),
+        var(--rose);
       transform: rotateY(180deg);
     }
 
-    .workspace {
-      padding: 22px;
+    .tasks-view {
+      align-content: stretch;
+      padding: 24px;
+    }
+
+    .screen-head {
+      position: relative;
+      z-index: 2;
+      padding-top: 20px;
+    }
+
+    .screen-head h2,
+    .diary-view h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .screen-head p,
+    .diary-view p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .task-stream {
+      position: relative;
+      min-height: 390px;
+      margin-top: 18px;
+      margin-bottom: 88px;
       overflow: hidden;
     }
 
-    .workspace-head {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 20px;
-    }
-
-    .workspace-head h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 42px);
-      line-height: 1.12;
-    }
-
-    .setup-row {
+    .task-card {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -86px;
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .setup-row input {
-      min-width: 0;
-      min-height: 46px;
-      padding: 0 15px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      outline: 0;
-      background: #fffaf2;
-    }
-
-    .tasks {
-      display: grid;
-      gap: 12px;
-      min-height: 178px;
-      margin-bottom: 22px;
-    }
-
-    .task {
-      position: relative;
-      display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 22px 1fr;
       align-items: center;
       gap: 12px;
-      padding: 15px;
+      min-height: 68px;
+      padding: 14px 15px;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, .58);
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity .5s ease, transform .5s ease;
-      overflow: visible;
-    }
-
-    .task.visible {
-      opacity: 1;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 16px 34px rgba(61, 46, 36, .1);
+      backdrop-filter: blur(12px);
+      z-index: 3;
       transform: translateY(0);
+      animation: riseTask .75s cubic-bezier(.2, .8, .2, 1) forwards;
+      animation-delay: var(--delay);
     }
 
-    .task input {
+    .task-card input {
       width: 20px;
       height: 20px;
       accent-color: var(--green);
     }
 
-    .task.shatter {
+    .task-card.completed {
+      pointer-events: none;
       animation: taskOut .52s ease forwards;
     }
 
     .particle {
       position: absolute;
-      left: 24px;
+      left: 28px;
       top: 50%;
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--gold);
       pointer-events: none;
-      animation: burst .72s ease-out forwards;
+      animation: burst .74s ease-out forwards;
     }
 
-    .diary {
-      display: grid;
-      gap: 12px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
+    .to-diary {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 18px 36px rgba(36, 70, 61, .22);
+      font-weight: 900;
+      line-height: 1;
+      z-index: 2;
+      transform: translateY(24px);
+      opacity: 0;
+      transition: opacity .42s ease, transform .42s ease;
     }
 
-    .diary h2 {
-      margin: 0;
-      font-size: 28px;
+    .to-diary.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .diary-view {
+      align-content: start;
+      padding: 34px 24px;
     }
 
     textarea {
       width: 100%;
-      min-height: 190px;
-      padding: 18px 20px 22px;
+      min-height: 280px;
+      margin-top: 22px;
+      padding: 18px 18px 22px;
       border: 1px solid var(--line);
-      border-radius: 22px;
+      border-radius: 24px;
       outline: 0;
-      resize: vertical;
+      resize: none;
       color: var(--ink);
       background:
         repeating-linear-gradient(
           transparent 0 42px,
-          rgba(78, 113, 140, .16) 42px 43px,
+          rgba(85, 117, 140, .16) 42px 43px,
           transparent 43px 44px
         ),
-        #fffaf2;
+        rgba(255, 250, 242, .86);
       background-position: 0 18px;
-      font-size: 19px;
+      font-size: 18px;
       line-height: 44px;
     }
 
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      margin-top: 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 16px 34px rgba(36, 70, 61, .22);
+      font-weight: 900;
+      line-height: 1;
+    }
+
     .encourage {
-      min-height: 54px;
+      margin-top: 14px;
+      min-height: 64px;
       padding: 14px 16px;
       border-radius: 18px;
       background: rgba(36, 70, 61, .1);
       color: var(--green);
       font-weight: 900;
+      line-height: 1.55;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity .45s ease, transform .45s ease;
@@ -317,11 +400,30 @@
       transform: translateY(0);
     }
 
+    .reset {
+      margin-top: 18px;
+      color: var(--muted);
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    @keyframes riseTask {
+      from {
+        opacity: 0;
+        transform: translateY(0) scale(.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(var(--rise)) scale(1);
+      }
+    }
+
     @keyframes taskOut {
       to {
         opacity: 0;
-        transform: scale(.94) translateY(-8px);
-        filter: blur(2px);
+        transform: translateY(var(--rise)) scale(.98);
+        filter: blur(3px);
       }
     }
 
@@ -333,24 +435,40 @@
     }
 
     @media (max-width: 900px) {
-      .app-shell {
+      .layout {
         grid-template-columns: 1fr;
+      }
+
+      .copy {
+        order: 2;
       }
     }
 
     @media (max-width: 620px) {
       .shell {
-        width: min(100% - 20px, 1080px);
-        padding: 18px 0;
+        width: min(100% - 18px, 1120px);
+        padding: 18px 0 28px;
       }
 
-      .topbar,
-      .workspace-head {
-        display: grid;
+      .topbar {
+        margin-bottom: 12px;
       }
 
-      .setup-row {
-        grid-template-columns: 1fr;
+      .copy {
+        display: none;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: calc(100vh - 86px);
+      }
+
+      .screen {
+        min-height: calc(100vh - 134px);
+      }
+
+      .streak {
+        font-size: 72px;
       }
     }
   </style>
@@ -362,51 +480,61 @@
       <a href="index.html">返回介绍页</a>
     </header>
 
-    <div class="app-shell">
-      <aside class="panel">
-        <p class="muted">你的连续记录</p>
-        <h2 class="streak"><span id="streakCount">0</span> 天</h2>
-        <p class="muted" id="streakText">今天还没有打卡。</p>
-        <div class="check-card">
-          <button class="check-button" id="checkButton">
-            <span class="check-face">今日打卡</span>
-            <span class="check-face check-back">已完成</span>
-          </button>
-        </div>
-      </aside>
+    <div class="layout">
+      <section class="copy">
+        <h1>一天只做一个顺序：打卡、完成、写下感受。</h1>
+        <p>产品界面不再把所有功能同时摆出来。它像一个很轻的仪式：先确认今天，再让每日事项浮上来，最后留下今天的心情。</p>
+      </section>
 
-      <main class="workspace">
-        <div class="workspace-head">
-          <div>
-            <h1>今天要完成什么？</h1>
-            <p class="muted">先设定每天想做的小事。完成打卡后，它们会依次出现。</p>
-          </div>
-          <button class="soft-button" id="resetDemo">重置演示</button>
-        </div>
+      <main class="phone">
+        <div class="screen">
+          <section class="view check-view active" id="checkView">
+            <div class="date-pill" id="todayText">今天</div>
+            <h2 class="streak"><span id="streakCount">0</span> 天</h2>
+            <p class="streak-label" id="streakText">今天还没有打卡。</p>
+            <div class="check-card">
+              <button class="check-button" id="checkButton">
+                <span class="check-face">今日打卡</span>
+                <span class="check-face check-back">已完成</span>
+              </button>
+            </div>
+            <button class="reset" id="resetDemo">重置演示</button>
+          </section>
 
-        <div class="setup-row">
-          <input id="taskInput" placeholder="例如：读 10 页书 / 散步 20 分钟 / 记录一个灵感">
-          <button class="primary" id="addTask">添加事项</button>
-        </div>
+          <section class="view tasks-view" id="tasksView">
+            <div class="screen-head">
+              <h2>今天的小事</h2>
+              <p>从底部升起来，完成哪件就点掉哪件。</p>
+            </div>
+            <div class="task-stream" id="taskStream"></div>
+            <button class="to-diary" id="toDiary">我完成了，记录下今天的感受吧</button>
+          </section>
 
-        <div class="tasks" id="tasks"></div>
-
-        <div class="diary">
-          <div>
+          <section class="view diary-view" id="diaryView">
             <h2>今天的感受</h2>
-            <p class="muted">不用写很多，留下一个真实的瞬间就好。</p>
-          </div>
-          <textarea id="diaryText" placeholder="今天我感觉……"></textarea>
-          <button class="primary" id="saveDiary">保存今日感悟</button>
-          <div class="encourage" id="encourage">写完后，这里会出现一句鼓励。</div>
+            <p>写一句也可以。真实比完整更重要。</p>
+            <textarea id="diaryText" placeholder="今天我感觉……"></textarea>
+            <button class="primary" id="saveDiary">保存今日感悟</button>
+            <div class="encourage" id="encourage">写完后，这里会出现一句鼓励。</div>
+          </section>
         </div>
       </main>
     </div>
   </div>
 
   <script>
-    const storageKey = "echopal-simple-state";
+    const storageKey = "echopal-flow-state";
     const defaultTasks = ["记录一个灵感", "整理一件小事", "写下今天的感受"];
+    const encouragements = [
+      "今天你已经完成了一次很重要的回来。明天不用很厉害，只要继续出现。",
+      "把感受写下来，本身就是在照顾自己。明天再来，哪怕只留一句也很好。",
+      "你没有让今天悄悄溜走，它被你接住了。明天继续，一点点就够。",
+      "连续不是用来逼自己的，是用来证明你正在慢慢靠近想成为的人。",
+      "今天的小事已经落地，今天的心情也有了位置。明天再回来看看它们。",
+      "不用把一天过得完美。能打卡、能完成一点、能写下感受，就已经很珍贵。",
+      "你给今天留了一盏灯。明天打开这里时，它还会亮着。"
+    ];
+
     let state = loadState();
 
     function loadState() {
@@ -416,7 +544,8 @@
         streak: 0,
         checkedDate: "",
         tasks: defaultTasks.map((text, index) => ({ id: Date.now() + index, text, done: false })),
-        diary: ""
+        diary: "",
+        lastEncouragement: -1
       };
     }
 
@@ -428,88 +557,131 @@
       return new Date().toISOString().slice(0, 10);
     }
 
-    function render() {
-      const checked = state.checkedDate === todayKey();
-      document.querySelector("#streakCount").textContent = state.streak;
-      document.querySelector("#streakText").textContent = checked ? "今天已经回来过了，明天继续。" : "今天还没有打卡。";
-      document.querySelector("#checkButton").classList.toggle("done", checked);
-      document.querySelector("#checkButton").classList.toggle("fading", checked);
-      document.querySelector("#diaryText").value = state.diary || "";
-      renderTasks(checked);
-      saveState();
-    }
-
-    function renderTasks(show) {
-      const tasksEl = document.querySelector("#tasks");
-      tasksEl.innerHTML = "";
-      state.tasks.forEach((task, index) => {
-        const row = document.createElement("label");
-        row.className = `task ${show ? "visible" : ""}`;
-        row.style.transitionDelay = show ? `${index * 90}ms` : "0ms";
-        row.innerHTML = `<input type="checkbox" ${task.done ? "checked" : ""}><span>${task.text}</span>`;
-        row.querySelector("input").addEventListener("change", event => {
-          if (event.target.checked) completeTask(row, task.id);
-        });
-        tasksEl.appendChild(row);
+    function setView(nextId) {
+      document.querySelectorAll(".view").forEach(view => {
+        view.classList.toggle("active", view.id === nextId);
+        view.classList.remove("leaving");
       });
     }
 
+    function transitionTo(currentId, nextId, delay = 420) {
+      const current = document.querySelector(`#${currentId}`);
+      if (current) current.classList.add("leaving");
+      setTimeout(() => setView(nextId), delay);
+    }
+
+    function renderCheck() {
+      const checked = state.checkedDate === todayKey();
+      document.querySelector("#streakCount").textContent = state.streak;
+      document.querySelector("#streakText").textContent = checked ? "今天已经回来过了。" : "今天还没有打卡。";
+      document.querySelector("#checkButton").classList.toggle("done", checked);
+      document.querySelector("#checkButton").classList.toggle("fading", checked);
+      document.querySelector("#diaryText").value = state.diary || "";
+      saveState();
+    }
+
+    function renderTasks() {
+      const stream = document.querySelector("#taskStream");
+      stream.innerHTML = "";
+      state.tasks.forEach((task, index) => {
+        const row = document.createElement("label");
+        row.className = "task-card";
+        row.style.setProperty("--delay", `${index * 160}ms`);
+        row.style.setProperty("--rise", `${-168 - index * 82}px`);
+        row.innerHTML = `<input type="checkbox" aria-label="完成"><span>${task.text}</span>`;
+        row.addEventListener("click", event => {
+          event.preventDefault();
+          completeTask(row, task.id);
+        });
+        stream.appendChild(row);
+      });
+      const showDelay = Math.max(760, state.tasks.length * 160 + 560);
+      setTimeout(() => document.querySelector("#toDiary").classList.add("show"), showDelay);
+    }
+
     function completeTask(row, id) {
-      for (let i = 0; i < 26; i++) {
+      if (row.dataset.completed === "true") return;
+      row.dataset.completed = "true";
+      const checkbox = row.querySelector("input");
+      if (checkbox) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+      }
+      for (let i = 0; i < 30; i++) {
         const particle = document.createElement("span");
         particle.className = "particle";
-        particle.style.setProperty("--x", `${Math.cos(i) * (50 + Math.random() * 80)}px`);
-        particle.style.setProperty("--y", `${Math.sin(i * 1.7) * (30 + Math.random() * 70)}px`);
+        particle.style.setProperty("--x", `${Math.cos(i * .74) * (42 + Math.random() * 96)}px`);
+        particle.style.setProperty("--y", `${Math.sin(i * 1.3) * (30 + Math.random() * 88)}px`);
         particle.style.background = i % 3 === 0 ? "var(--rose)" : i % 3 === 1 ? "var(--gold)" : "var(--green-2)";
         row.appendChild(particle);
       }
-      row.classList.add("shatter");
+      row.classList.add("completed");
       setTimeout(() => {
         state.tasks = state.tasks.filter(task => task.id !== id);
         saveState();
-        renderTasks(true);
+        row.remove();
       }, 560);
     }
 
+    function randomEncouragement() {
+      let next = Math.floor(Math.random() * encouragements.length);
+      if (encouragements.length > 1) {
+        while (next === state.lastEncouragement) {
+          next = Math.floor(Math.random() * encouragements.length);
+        }
+      }
+      state.lastEncouragement = next;
+      return encouragements[next];
+    }
+
+    document.querySelector("#todayText").textContent = new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    }).format(new Date());
+
     document.querySelector("#checkButton").addEventListener("click", () => {
-      if (state.checkedDate === todayKey()) return;
+      if (state.checkedDate === todayKey()) {
+        transitionTo("checkView", "tasksView");
+        setTimeout(renderTasks, 480);
+        return;
+      }
       state.checkedDate = todayKey();
       state.streak += 1;
       saveState();
-      render();
-      setTimeout(() => document.querySelector("#checkButton").classList.add("fading"), 780);
-      setTimeout(() => renderTasks(true), 940);
+      renderCheck();
+      setTimeout(() => document.querySelector("#checkButton").classList.add("fading"), 760);
+      setTimeout(() => {
+        transitionTo("checkView", "tasksView", 320);
+        setTimeout(renderTasks, 360);
+      }, 1180);
     });
 
-    document.querySelector("#addTask").addEventListener("click", () => {
-      const input = document.querySelector("#taskInput");
-      const text = input.value.trim();
-      if (!text) return;
-      state.tasks.push({ id: Date.now(), text, done: false });
-      input.value = "";
-      saveState();
-      renderTasks(state.checkedDate === todayKey());
+    document.querySelector("#toDiary").addEventListener("click", () => {
+      document.querySelector("#toDiary").classList.remove("show");
+      transitionTo("tasksView", "diaryView");
     });
 
     document.querySelector("#saveDiary").addEventListener("click", () => {
       const text = document.querySelector("#diaryText").value.trim();
       state.diary = text;
-      saveState();
       const encourage = document.querySelector("#encourage");
-      encourage.textContent = text
-        ? "你已经把今天好好接住了。明天再回来打卡，继续让这些小事发光。"
-        : "哪怕只写一句也可以。今天先到这里，明天继续。";
+      encourage.textContent = text ? randomEncouragement() : "哪怕只写一句也可以。今天先到这里，明天继续。";
       encourage.classList.add("show");
+      saveState();
     });
 
     document.querySelector("#resetDemo").addEventListener("click", () => {
       localStorage.removeItem(storageKey);
       state = loadState();
+      document.querySelector("#checkButton").classList.remove("done", "fading");
+      document.querySelector("#toDiary").classList.remove("show");
       document.querySelector("#encourage").classList.remove("show");
-      render();
+      setView("checkView");
+      renderCheck();
     });
 
-    render();
+    renderCheck();
   </script>
 </body>
 </html>
