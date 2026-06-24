@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EchoPal 产品界面</title>
+  <style>
+    :root {
+      --ink: #251f1b;
+      --muted: #74695f;
+      --paper: #fff8ed;
+      --line: rgba(66, 49, 37, .16);
+      --green: #24463d;
+      --green-2: #5f806f;
+      --rose: #bf6f67;
+      --gold: #c79a45;
+      --blue: #55758c;
+      --bg: #efe2d2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(191, 111, 103, .18), transparent 26%),
+        radial-gradient(circle at 12% 84%, rgba(95, 128, 111, .2), transparent 30%),
+        linear-gradient(135deg, #f3e7d8, #dfcfbd);
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--green);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, .86fr) minmax(360px, .62fr);
+      align-items: center;
+      gap: clamp(24px, 5vw, 70px);
+      min-height: calc(100vh - 112px);
+    }
+
+    .copy h1 {
+      max-width: 620px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .copy p {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .phone {
+      position: relative;
+      width: min(390px, 100%);
+      min-height: 720px;
+      margin: 0 auto;
+      padding: 14px;
+      border: 10px solid #181715;
+      border-radius: 44px;
+      background: #181715;
+      box-shadow: 0 40px 100px rgba(45, 34, 26, .28);
+    }
+
+    .screen {
+      position: relative;
+      min-height: 672px;
+      overflow: hidden;
+      border-radius: 31px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .7), transparent 36%),
+        linear-gradient(180deg, #fff8ed, #f0dfca);
+    }
+
+    .screen:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .35;
+      background-image: radial-gradient(rgba(54, 43, 34, .13) 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      padding: 28px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .view.leaving {
+      opacity: 0;
+      transform: translateY(-26px) scale(.98);
+    }
+
+    .date-pill {
+      justify-self: center;
+      margin-bottom: 18px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .58);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .check-view {
+      text-align: center;
+    }
+
+    .streak {
+      margin: 0;
+      font-size: 88px;
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    .streak-label {
+      margin: 12px 0 30px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .check-card {
+      perspective: 900px;
+    }
+
+    .check-button {
+      position: relative;
+      width: 100%;
+      min-height: 168px;
+      border-radius: 32px;
+      color: #fff;
+      background: transparent;
+      transform-style: preserve-3d;
+      transition: transform .72s cubic-bezier(.2, .8, .2, 1), opacity .55s ease, translate .55s ease;
+    }
+
+    .check-button.done {
+      transform: rotateY(180deg);
+    }
+
+    .check-button.fading {
+      opacity: 0;
+      translate: 0 -20px;
+      pointer-events: none;
+    }
+
+    .check-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      border-radius: inherit;
+      backface-visibility: hidden;
+      background:
+        radial-gradient(circle at 72% 22%, rgba(255, 255, 255, .2), transparent 30%),
+        var(--green);
+      box-shadow: 0 20px 42px rgba(36, 70, 61, .24);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .check-back {
+      background:
+        radial-gradient(circle at 26% 22%, rgba(255, 255, 255, .22), transparent 30%),
+        var(--rose);
+      transform: rotateY(180deg);
+    }
+
+    .tasks-view {
+      align-content: stretch;
+      padding: 24px;
+    }
+
+    .screen-head {
+      position: relative;
+      z-index: 2;
+      padding-top: 20px;
+    }
+
+    .screen-head h2,
+    .diary-view h2 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .screen-head p,
+    .diary-view p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .task-stream {
+      position: relative;
+      min-height: 390px;
+      margin-top: 18px;
+      margin-bottom: 88px;
+      overflow: hidden;
+    }
+
+    .task-card {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -86px;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      align-items: center;
+      gap: 12px;
+      min-height: 68px;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 16px 34px rgba(61, 46, 36, .1);
+      backdrop-filter: blur(12px);
+      z-index: 3;
+      transform: translateY(0);
+      animation: riseTask .75s cubic-bezier(.2, .8, .2, 1) forwards;
+      animation-delay: var(--delay);
+    }
+
+    .task-card input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--green);
+    }
+
+    .task-card.completed {
+      pointer-events: none;
+      animation: taskOut .52s ease forwards;
+    }
+
+    .particle {
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: burst .74s ease-out forwards;
+    }
+
+    .to-diary {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 18px 36px rgba(36, 70, 61, .22);
+      font-weight: 900;
+      line-height: 1;
+      z-index: 2;
+      transform: translateY(24px);
+      opacity: 0;
+      transition: opacity .42s ease, transform .42s ease;
+    }
+
+    .to-diary.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .diary-view {
+      align-content: start;
+      padding: 34px 24px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 280px;
+      margin-top: 22px;
+      padding: 18px 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      outline: 0;
+      resize: none;
+      color: var(--ink);
+      background:
+        repeating-linear-gradient(
+          transparent 0 42px,
+          rgba(85, 117, 140, .16) 42px 43px,
+          transparent 43px 44px
+        ),
+        rgba(255, 250, 242, .86);
+      background-position: 0 18px;
+      font-size: 18px;
+      line-height: 44px;
+    }
+
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      margin-top: 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 16px 34px rgba(36, 70, 61, .22);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .encourage {
+      margin-top: 14px;
+      min-height: 64px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(36, 70, 61, .1);
+      color: var(--green);
+      font-weight: 900;
+      line-height: 1.55;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .45s ease, transform .45s ease;
+    }
+
+    .encourage.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reset {
+      margin-top: 18px;
+      color: var(--muted);
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    @keyframes riseTask {
+      from {
+        opacity: 0;
+        transform: translateY(0) scale(.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(var(--rise)) scale(1);
+      }
+    }
+
+    @keyframes taskOut {
+      to {
+        opacity: 0;
+        transform: translateY(var(--rise)) scale(.98);
+        filter: blur(3px);
+      }
+    }
+
+    @keyframes burst {
+      to {
+        opacity: 0;
+        transform: translate(var(--x), var(--y)) scale(.2);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .copy {
+        order: 2;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .shell {
+        width: min(100% - 18px, 1120px);
+        padding: 18px 0 28px;
+      }
+
+      .topbar {
+        margin-bottom: 12px;
+      }
+
+      .copy {
+        display: none;
+      }
+
+      .phone {
+        width: 100%;
+        min-height: calc(100vh - 86px);
+      }
+
+      .screen {
+        min-height: calc(100vh - 134px);
+      }
+
+      .streak {
+        font-size: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="mark">E</span>EchoPal</div>
+      <a href="index.html">返回介绍页</a>
+    </header>
+
+    <div class="layout">
+      <section class="copy">
+        <h1>一天只做一个顺序：打卡、完成、写下感受。</h1>
+        <p>产品界面不再把所有功能同时摆出来。它像一个很轻的仪式：先确认今天，再让每日事项浮上来，最后留下今天的心情。</p>
+      </section>
+
+      <main class="phone">
+        <div class="screen">
+          <section class="view check-view active" id="checkView">
+            <div class="date-pill" id="todayText">今天</div>
+            <h2 class="streak"><span id="streakCount">0</span> 天</h2>
+            <p class="streak-label" id="streakText">今天还没有打卡。</p>
+            <div class="check-card">
+              <button class="check-button" id="checkButton">
+                <span class="check-face">今日打卡</span>
+                <span class="check-face check-back">已完成</span>
+              </button>
+            </div>
+            <button class="reset" id="resetDemo">重置演示</button>
+          </section>
+
+          <section class="view tasks-view" id="tasksView">
+            <div class="screen-head">
+              <h2>今天的小事</h2>
+              <p>从底部升起来，完成哪件就点掉哪件。</p>
+            </div>
+            <div class="task-stream" id="taskStream"></div>
+            <button class="to-diary" id="toDiary">我完成了，记录下今天的感受吧</button>
+          </section>
+
+          <section class="view diary-view" id="diaryView">
+            <h2>今天的感受</h2>
+            <p>写一句也可以。真实比完整更重要。</p>
+            <textarea id="diaryText" placeholder="今天我感觉……"></textarea>
+            <button class="primary" id="saveDiary">保存今日感悟</button>
+            <div class="encourage" id="encourage">写完后，这里会出现一句鼓励。</div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const storageKey = "echopal-flow-state";
+    const defaultTasks = ["记录一个灵感", "整理一件小事", "写下今天的感受"];
+    const encouragements = [
+      "今天你已经完成了一次很重要的回来。明天不用很厉害，只要继续出现。",
+      "把感受写下来，本身就是在照顾自己。明天再来，哪怕只留一句也很好。",
+      "你没有让今天悄悄溜走，它被你接住了。明天继续，一点点就够。",
+      "连续不是用来逼自己的，是用来证明你正在慢慢靠近想成为的人。",
+      "今天的小事已经落地，今天的心情也有了位置。明天再回来看看它们。",
+      "不用把一天过得完美。能打卡、能完成一点、能写下感受，就已经很珍贵。",
+      "你给今天留了一盏灯。明天打开这里时，它还会亮着。"
+    ];
+
+    let state = loadState();
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+      return {
+        streak: 0,
+        checkedDate: "",
+        tasks: defaultTasks.map((text, index) => ({ id: Date.now() + index, text, done: false })),
+        diary: "",
+        lastEncouragement: -1
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function todayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function setView(nextId) {
+      document.querySelectorAll(".view").forEach(view => {
+        view.classList.toggle("active", view.id === nextId);
+        view.classList.remove("leaving");
+      });
+    }
+
+    function transitionTo(currentId, nextId, delay = 420) {
+      const current = document.querySelector(`#${currentId}`);
+      if (current) current.classList.add("leaving");
+      setTimeout(() => setView(nextId), delay);
+    }
+
+    function renderCheck() {
+      const checked = state.checkedDate === todayKey();
+      document.querySelector("#streakCount").textContent = state.streak;
+      document.querySelector("#streakText").textContent = checked ? "今天已经回来过了。" : "今天还没有打卡。";
+      document.querySelector("#checkButton").classList.toggle("done", checked);
+      document.querySelector("#checkButton").classList.toggle("fading", checked);
+      document.querySelector("#diaryText").value = state.diary || "";
+      saveState();
+    }
+
+    function renderTasks() {
+      const stream = document.querySelector("#taskStream");
+      stream.innerHTML = "";
+      state.tasks.forEach((task, index) => {
+        const row = document.createElement("label");
+        row.className = "task-card";
+        row.style.setProperty("--delay", `${index * 160}ms`);
+        row.style.setProperty("--rise", `${-168 - index * 82}px`);
+        row.innerHTML = `<input type="checkbox" aria-label="完成"><span>${task.text}</span>`;
+        row.addEventListener("click", event => {
+          event.preventDefault();
+          completeTask(row, task.id);
+        });
+        stream.appendChild(row);
+      });
+      const showDelay = Math.max(760, state.tasks.length * 160 + 560);
+      setTimeout(() => document.querySelector("#toDiary").classList.add("show"), showDelay);
+    }
+
+    function completeTask(row, id) {
+      if (row.dataset.completed === "true") return;
+      row.dataset.completed = "true";
+      const checkbox = row.querySelector("input");
+      if (checkbox) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+      }
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("span");
+        particle.className = "particle";
+        particle.style.setProperty("--x", `${Math.cos(i * .74) * (42 + Math.random() * 96)}px`);
+        particle.style.setProperty("--y", `${Math.sin(i * 1.3) * (30 + Math.random() * 88)}px`);
+        particle.style.background = i % 3 === 0 ? "var(--rose)" : i % 3 === 1 ? "var(--gold)" : "var(--green-2)";
+        row.appendChild(particle);
+      }
+      row.classList.add("completed");
+      setTimeout(() => {
+        state.tasks = state.tasks.filter(task => task.id !== id);
+        saveState();
+        row.remove();
+      }, 560);
+    }
+
+    function randomEncouragement() {
+      let next = Math.floor(Math.random() * encouragements.length);
+      if (encouragements.length > 1) {
+        while (next === state.lastEncouragement) {
+          next = Math.floor(Math.random() * encouragements.length);
+        }
+      }
+      state.lastEncouragement = next;
+      return encouragements[next];
+    }
+
+    document.querySelector("#todayText").textContent = new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    }).format(new Date());
+
+    document.querySelector("#checkButton").addEventListener("click", () => {
+      if (state.checkedDate === todayKey()) {
+        transitionTo("checkView", "tasksView");
+        setTimeout(renderTasks, 480);
+        return;
+      }
+      state.checkedDate = todayKey();
+      state.streak += 1;
+      saveState();
+      renderCheck();
+      setTimeout(() => document.querySelector("#checkButton").classList.add("fading"), 760);
+      setTimeout(() => {
+        transitionTo("checkView", "tasksView", 320);
+        setTimeout(renderTasks, 360);
+      }, 1180);
+    });
+
+    document.querySelector("#toDiary").addEventListener("click", () => {
+      document.querySelector("#toDiary").classList.remove("show");
+      transitionTo("tasksView", "diaryView");
+    });
+
+    document.querySelector("#saveDiary").addEventListener("click", () => {
+      const text = document.querySelector("#diaryText").value.trim();
+      state.diary = text;
+      const encourage = document.querySelector("#encourage");
+      encourage.textContent = text ? randomEncouragement() : "哪怕只写一句也可以。今天先到这里，明天继续。";
+      encourage.classList.add("show");
+      saveState();
+    });
+
+    document.querySelector("#resetDemo").addEventListener("click", () => {
+      localStorage.removeItem(storageKey);
+      state = loadState();
+      document.querySelector("#checkButton").classList.remove("done", "fading");
+      document.querySelector("#toDiary").classList.remove("show");
+      document.querySelector("#encourage").classList.remove("show");
+      setView("checkView");
+      renderCheck();
+    });
+
+    renderCheck();
+  </script>
+</body>
+</html>
