@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>EchoPal</title>
+  <title>树洞</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -354,7 +354,7 @@
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -92px;
+      top: 0;
       display: grid;
       grid-template-columns: 24px 1fr;
       align-items: center;
@@ -367,9 +367,28 @@
       box-shadow: 0 18px 38px rgba(61, 46, 36, .12);
       backdrop-filter: blur(14px);
       z-index: 3;
-      animation: riseTask .78s cubic-bezier(.2, .8, .2, 1) forwards;
-      animation-delay: var(--delay);
+      opacity: 0;
+      transform: translateY(var(--start-y)) scale(.96);
+      transition:
+        opacity .42s ease,
+        transform .72s cubic-bezier(.2, .82, .18, 1),
+        filter .48s ease;
       font-weight: 850;
+      text-align: left;
+      will-change: transform, opacity;
+    }
+
+    .task-card.ready {
+      opacity: 1;
+      transform: translateY(var(--y)) scale(1);
+    }
+
+    .task-card span:last-child {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      min-height: 24px;
+      line-height: 1.35;
     }
 
     .task-dot {
@@ -382,13 +401,15 @@
 
     .task-card.completed {
       pointer-events: none;
-      animation: taskOut .78s ease forwards;
+      opacity: 0;
+      transform: translateY(calc(var(--y) - 28px)) translateZ(-18px) scale(.92);
+      filter: blur(4px);
     }
 
     .particle {
       position: absolute;
-      left: 30px;
-      top: 50%;
+      left: var(--origin-x);
+      top: var(--origin-y);
       width: var(--size);
       height: var(--size);
       border-radius: 50%;
@@ -585,29 +606,20 @@
       display: none !important;
     }
 
-    @keyframes riseTask {
-      from {
-        opacity: 0;
-        transform: translateY(0) scale(.96);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(var(--rise)) scale(1);
-      }
-    }
-
-    @keyframes taskOut {
-      to {
-        opacity: 0;
-        transform: translateY(var(--rise)) scale(.98);
-        filter: blur(3px);
-      }
-    }
-
     @keyframes burst {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      }
+      48% {
+        opacity: .88;
+        transform: translate3d(calc(var(--x) * .58), calc(var(--y) * .54), var(--z)) rotate(calc(var(--r) * .52)) scale(.88);
+        filter: blur(.3px);
+      }
       to {
         opacity: 0;
-        transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(.12);
+        transform: translate3d(var(--x), var(--y), var(--z)) rotate(var(--r)) scale(.12);
+        filter: blur(1.4px);
       }
     }
 
@@ -663,11 +675,11 @@
 <body>
   <main class="app">
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="返回介绍页"><span class="mark">E</span>EchoPal</a>
+      <a class="brand" href="index.html" aria-label="返回介绍页"><span class="mark">树</span>树洞</a>
       <div class="nav-actions">
         <button class="text-button hidden" id="todayNav">今日</button>
         <button class="icon-button hidden" id="settingsNav" title="每日事项">＋</button>
-        <button class="icon-button hidden" id="historyNav" title="个人中心">人</button>
+        <button class="text-button hidden" id="historyNav">我的</button>
         <button class="text-button hidden" id="signOut">退出</button>
       </div>
     </header>
@@ -744,7 +756,7 @@
     </section>
 
     <section class="final-overlay" id="finalOverlay" aria-live="polite">
-      <div class="final-message">深夜里问题的答案坚如磐石，明天见。</div>
+      <div class="final-message">问题的答案，进入磐石，明天见。</div>
     </section>
 
     <div class="cloud-note hidden" id="cloudNote">Supabase 还没配置，当前是本机预览模式。配置后会自动使用云端登录和数据库。</div>
@@ -897,34 +909,56 @@
         row.className = "task-card";
         row.type = "button";
         row.style.setProperty("--delay", `${index * 150}ms`);
-        row.style.setProperty("--rise", `${-170 - index * 84}px`);
+        row.style.setProperty("--start-y", `${stream.clientHeight + 40 + index * 18}px`);
+        row.style.setProperty("--y", `${index * 84}px`);
+        row.dataset.taskId = String(task.id);
         row.innerHTML = `<span class="task-dot"></span><span>${task.text}</span>`;
-        row.addEventListener("click", () => completeTask(row, String(task.id)));
+        row.addEventListener("click", event => completeTask(row, String(task.id), event));
         stream.appendChild(row);
+        setTimeout(() => row.classList.add("ready"), 70 + index * 150);
       });
       const showDelay = Math.max(760, activeTaskIds.size * 160 + 560);
       setTimeout(() => $("#toDiary").classList.add("show"), showDelay);
     }
 
-    function completeTask(row, id) {
+    function settleTaskPositions() {
+      [...$("#taskStream").querySelectorAll(".task-card:not(.completed)")].forEach((row, index) => {
+        row.style.setProperty("--y", `${index * 84}px`);
+        row.style.transitionDelay = `${index * 45}ms`;
+        row.style.zIndex = String(4 + index);
+      });
+    }
+
+    function completeTask(row, id, event) {
       if (row.dataset.completed === "true") return;
       row.dataset.completed = "true";
       activeTaskIds.delete(id);
+      const stream = $("#taskStream");
+      const streamRect = stream.getBoundingClientRect();
+      const originX = event.clientX - streamRect.left;
+      const originY = event.clientY - streamRect.top;
       for (let i = 0; i < 56; i++) {
         const particle = document.createElement("span");
         particle.className = "particle";
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 42 + Math.random() * 150;
+        const angle = -Math.PI * (.18 + Math.random() * .64);
+        const distance = 54 + Math.random() * 170;
+        const sideDrift = -62 + Math.random() * 124;
         particle.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
-        particle.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+        particle.style.setProperty("--y", `${Math.sin(angle) * distance - 48 - Math.random() * 96}px`);
+        particle.style.setProperty("--z", `${sideDrift}px`);
         particle.style.setProperty("--r", `${-180 + Math.random() * 360}deg`);
         particle.style.setProperty("--size", `${4 + Math.random() * 7}px`);
+        particle.style.setProperty("--origin-x", `${originX}px`);
+        particle.style.setProperty("--origin-y", `${originY}px`);
         particle.style.color = i % 3 === 0 ? "var(--rose)" : i % 3 === 1 ? "var(--gold)" : "var(--green-2)";
         particle.style.background = "currentColor";
-        row.appendChild(particle);
+        stream.appendChild(particle);
       }
       row.classList.add("completed");
-      setTimeout(() => row.remove(), 560);
+      setTimeout(() => {
+        row.remove();
+        requestAnimationFrame(settleTaskPositions);
+      }, 360);
     }
 
     function currentTaskSummary() {

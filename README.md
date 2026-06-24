@@ -1,6 +1,6 @@
-# EchoPal
+# 树洞
 
-EchoPal 是一个轻量的每日记录产品原型。
+树洞是一个轻量的每日记录产品原型。
 
 Deployment trigger: 2026-06-24T03:39:42Z
 
