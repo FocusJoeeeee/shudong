@@ -2,6 +2,8 @@
 
 EchoPal 是一个轻量的每日记录产品原型。
 
+Deployment trigger: 2026-06-24T03:39:42Z
+
 - `index.html`: 产品介绍页
 - `echopal-app.html`: 产品界面
 - `outputs/`: 交付备份文件
