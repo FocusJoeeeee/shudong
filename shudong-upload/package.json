@@ -1,0 +1,9 @@
+{
+  "name": "echopal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8765",
+    "check": "node -e \"const fs=require('fs'); ['index.html','echopal-app.html'].forEach(f=>{ if(!fs.existsSync(f)) throw new Error(f+' missing') }); console.log('static files ready')\""
+  }
+}
