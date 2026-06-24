@@ -2,36 +2,44 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EchoPal 产品界面</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EchoPal</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --ink: #251f1b;
-      --muted: #74695f;
+      --muted: #756a61;
       --paper: #fff8ed;
-      --line: rgba(66, 49, 37, .16);
+      --line: rgba(63, 47, 36, .15);
       --green: #24463d;
-      --green-2: #5f806f;
-      --rose: #bf6f67;
-      --gold: #c79a45;
-      --blue: #55758c;
-      --bg: #efe2d2;
+      --green-2: #678475;
+      --rose: #c5746f;
+      --gold: #c49a48;
+      --sky: #65879a;
+      --bg: #efe1d0;
+      --shadow: 0 24px 70px rgba(45, 34, 26, .16);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
       color: var(--ink);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 82% 12%, rgba(191, 111, 103, .18), transparent 26%),
-        radial-gradient(circle at 12% 84%, rgba(95, 128, 111, .2), transparent 30%),
-        linear-gradient(135deg, #f3e7d8, #dfcfbd);
-      overflow-x: hidden;
+        radial-gradient(circle at 80% 8%, rgba(197, 116, 111, .22), transparent 28%),
+        radial-gradient(circle at 10% 86%, rgba(103, 132, 117, .24), transparent 30%),
+        linear-gradient(145deg, #fff1df, #e5d2bd);
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
     }
 
     button,
@@ -46,78 +54,83 @@
     }
 
     a {
-      color: var(--green);
-      font-weight: 800;
+      color: inherit;
       text-decoration: none;
     }
 
-    .shell {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 36px;
+    .app {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(255, 248, 237, .68), rgba(255, 248, 237, .28)),
+        radial-gradient(rgba(66, 49, 37, .1) 1px, transparent 1px);
+      background-size: auto, 20px 20px;
     }
 
     .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 22px;
+      gap: 12px;
+      padding: max(16px, env(safe-area-inset-top)) 18px 12px;
+      background: linear-gradient(rgba(255, 248, 237, .86), rgba(255, 248, 237, .18));
+      backdrop-filter: blur(14px);
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 900;
+      gap: 9px;
+      font-weight: 950;
     }
 
     .mark {
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       color: #fff;
       background: var(--green);
+      box-shadow: 0 10px 22px rgba(36, 70, 61, .2);
     }
 
-    .app-stage {
-      display: grid;
-      place-items: center;
-      min-height: calc(100vh - 112px);
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .phone {
-      position: relative;
-      width: min(430px, 100%);
-      min-height: 760px;
-      margin: 0 auto;
-      padding: 14px;
-      border: 10px solid #181715;
-      border-radius: 44px;
-      background: #181715;
-      box-shadow: 0 40px 100px rgba(45, 34, 26, .28);
+    .icon-button,
+    .text-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      border: 1px solid rgba(255, 248, 237, .78);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(255, 248, 237, .64);
+      box-shadow: 0 12px 28px rgba(58, 45, 34, .08);
+      font-weight: 900;
     }
 
-    .screen {
-      position: relative;
-      min-height: 712px;
-      overflow: hidden;
-      border-radius: 31px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .7), transparent 36%),
-        linear-gradient(180deg, #fff8ed, #f0dfca);
+    .icon-button {
+      width: 38px;
+      font-size: 17px;
     }
 
-    .screen:before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .35;
-      background-image: radial-gradient(rgba(54, 43, 34, .13) 1px, transparent 1px);
-      background-size: 18px 18px;
+    .text-button {
+      padding: 0 13px;
+      font-size: 13px;
     }
 
     .view {
@@ -125,11 +138,11 @@
       inset: 0;
       display: grid;
       align-content: center;
-      padding: 28px;
+      padding: 82px 20px 28px;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(24px);
-      transition: opacity .55s ease, transform .55s ease;
+      transform: translateY(28px);
+      transition: opacity .5s ease, transform .5s ease;
     }
 
     .view.active {
@@ -140,51 +153,144 @@
 
     .view.leaving {
       opacity: 0;
-      transform: translateY(-26px) scale(.98);
+      transform: translateY(-24px) scale(.985);
     }
 
-    .date-pill {
-      justify-self: center;
-      margin-bottom: 18px;
-      padding: 8px 13px;
+    .auth-panel,
+    .settings-panel,
+    .history-panel {
+      width: min(100%, 520px);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      padding: 7px 11px;
       border: 1px solid var(--line);
       border-radius: 999px;
       color: var(--muted);
-      background: rgba(255, 255, 255, .58);
-      font-size: 13px;
+      background: rgba(255, 255, 255, .46);
+      font-size: 12px;
       font-weight: 900;
+    }
+
+    h1,
+    h2 {
+      margin: 14px 0 0;
+      letter-spacing: 0;
+      line-height: 1.08;
+    }
+
+    h1 {
+      font-size: clamp(42px, 14vw, 78px);
+    }
+
+    h2 {
+      font-size: clamp(30px, 9vw, 48px);
+    }
+
+    p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .form {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .field,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      outline: 0;
+      color: var(--ink);
+      background: rgba(255, 250, 242, .78);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .48);
+    }
+
+    .field {
+      height: 52px;
+      padding: 0 16px;
+      border-radius: 18px;
+    }
+
+    .primary,
+    .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      border-radius: 999px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .primary {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 18px 38px rgba(36, 70, 61, .22);
+    }
+
+    .ghost {
+      color: var(--green);
+      background: rgba(255, 248, 237, .58);
+      border: 1px solid var(--line);
+    }
+
+    .hint {
+      min-height: 24px;
+      color: var(--rose);
+      font-size: 13px;
+      font-weight: 800;
     }
 
     .check-view {
       text-align: center;
     }
 
+    .date-pill {
+      justify-self: center;
+      margin-bottom: 16px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .52);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
     .streak {
       margin: 0;
-      font-size: 88px;
-      line-height: .92;
-      letter-spacing: 0;
+      font-size: clamp(76px, 26vw, 118px);
+      line-height: .9;
     }
 
     .streak-label {
-      margin: 12px 0 30px;
-      color: var(--muted);
-      font-weight: 800;
+      margin: 12px 0 32px;
+      font-weight: 850;
     }
 
     .check-card {
-      perspective: 900px;
+      width: min(100%, 430px);
+      margin: 0 auto;
+      perspective: 1000px;
     }
 
     .check-button {
       position: relative;
       width: 100%;
-      min-height: 168px;
-      border-radius: 32px;
+      min-height: 174px;
+      border-radius: 34px;
       color: #fff;
       background: transparent;
       transform-style: preserve-3d;
-      transition: transform .72s cubic-bezier(.2, .8, .2, 1), opacity .55s ease, translate .55s ease;
+      transition: transform .74s cubic-bezier(.2, .82, .2, 1), opacity .5s ease, translate .5s ease;
     }
 
     .check-button.done {
@@ -193,7 +299,7 @@
 
     .check-button.fading {
       opacity: 0;
-      translate: 0 -20px;
+      translate: 0 -18px;
       pointer-events: none;
     }
 
@@ -206,11 +312,11 @@
       border-radius: inherit;
       backface-visibility: hidden;
       background:
-        radial-gradient(circle at 72% 22%, rgba(255, 255, 255, .2), transparent 30%),
+        radial-gradient(circle at 74% 22%, rgba(255, 255, 255, .2), transparent 28%),
         var(--green);
-      box-shadow: 0 20px 42px rgba(36, 70, 61, .24);
-      font-size: 28px;
-      font-weight: 900;
+      box-shadow: var(--shadow);
+      font-size: 30px;
+      font-weight: 950;
     }
 
     .check-back {
@@ -220,36 +326,27 @@
       transform: rotateY(180deg);
     }
 
-    .tasks-view {
+    .tasks-view,
+    .diary-view,
+    .history-view,
+    .settings-view {
       align-content: stretch;
-      padding: 24px;
+      padding-bottom: max(22px, env(safe-area-inset-bottom));
     }
 
     .screen-head {
       position: relative;
       z-index: 2;
-      padding-top: 20px;
-    }
-
-    .screen-head h2,
-    .diary-view h2 {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1.15;
-    }
-
-    .screen-head p,
-    .diary-view p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      line-height: 1.55;
+      width: min(100%, 560px);
+      margin: 0 auto;
+      padding-top: 6px;
     }
 
     .task-stream {
       position: relative;
-      min-height: 390px;
-      margin-top: 18px;
-      margin-bottom: 88px;
+      width: min(100%, 560px);
+      min-height: min(55vh, 430px);
+      margin: 18px auto 94px;
       overflow: hidden;
     }
 
@@ -257,28 +354,30 @@
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -86px;
+      bottom: -92px;
       display: grid;
-      grid-template-columns: 22px 1fr;
+      grid-template-columns: 24px 1fr;
       align-items: center;
-      gap: 12px;
-      min-height: 68px;
-      padding: 14px 15px;
+      gap: 13px;
+      min-height: 72px;
+      padding: 15px 16px;
       border: 1px solid var(--line);
-      border-radius: 20px;
+      border-radius: 22px;
       background: rgba(255, 255, 255, .72);
-      box-shadow: 0 16px 34px rgba(61, 46, 36, .1);
-      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 38px rgba(61, 46, 36, .12);
+      backdrop-filter: blur(14px);
       z-index: 3;
-      transform: translateY(0);
-      animation: riseTask .75s cubic-bezier(.2, .8, .2, 1) forwards;
+      animation: riseTask .78s cubic-bezier(.2, .8, .2, 1) forwards;
       animation-delay: var(--delay);
+      font-weight: 850;
     }
 
-    .task-card input {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--green);
+    .task-dot {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--green-2);
+      border-radius: 50%;
+      background: rgba(255, 248, 237, .6);
     }
 
     .task-card.completed {
@@ -288,34 +387,24 @@
 
     .particle {
       position: absolute;
-      left: 28px;
+      left: 30px;
       top: 50%;
       width: var(--size);
       height: var(--size);
       border-radius: 50%;
       pointer-events: none;
       box-shadow: 0 0 14px currentColor;
-      animation: burst .9s ease-out forwards;
+      animation: burst .92s ease-out forwards;
     }
 
     .to-diary {
-      position: absolute;
-      left: 24px;
-      right: 24px;
-      bottom: 24px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 50px;
-      border-radius: 999px;
-      color: #fff;
-      background: var(--green);
-      box-shadow: 0 18px 36px rgba(36, 70, 61, .22);
-      font-weight: 900;
-      line-height: 1;
-      z-index: 2;
-      transform: translateY(24px);
+      position: fixed;
+      left: 20px;
+      right: 20px;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 10;
       opacity: 0;
+      transform: translateY(22px);
       transition: opacity .42s ease, transform .42s ease;
     }
 
@@ -324,50 +413,33 @@
       transform: translateY(0);
     }
 
-    .diary-view {
-      align-content: start;
-      padding: 34px 24px;
+    .diary-inner {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      align-self: start;
     }
 
     textarea {
-      width: 100%;
-      min-height: 280px;
+      min-height: min(46vh, 360px);
       margin-top: 22px;
       padding: 18px 18px 22px;
-      border: 1px solid var(--line);
       border-radius: 24px;
-      outline: 0;
       resize: none;
-      color: var(--ink);
       background:
         repeating-linear-gradient(
           transparent 0 42px,
-          rgba(85, 117, 140, .16) 42px 43px,
+          rgba(101, 135, 154, .18) 42px 43px,
           transparent 43px 44px
         ),
-        rgba(255, 250, 242, .86);
+        rgba(255, 250, 242, .84);
       background-position: 0 18px;
       font-size: 18px;
       line-height: 44px;
     }
 
-    .primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      margin-top: 14px;
-      border-radius: 999px;
-      color: #fff;
-      background: var(--green);
-      box-shadow: 0 16px 34px rgba(36, 70, 61, .22);
-      font-weight: 900;
-      line-height: 1;
-    }
-
     .encourage {
       margin-top: 14px;
-      min-height: 64px;
+      min-height: 62px;
       padding: 14px 16px;
       border-radius: 18px;
       background: rgba(36, 70, 61, .1);
@@ -385,18 +457,18 @@
     }
 
     .final-overlay {
-      position: absolute;
+      position: fixed;
       inset: 0;
-      z-index: 8;
+      z-index: 30;
       display: grid;
       place-items: center;
       padding: 30px;
       pointer-events: none;
       opacity: 0;
       background:
-        radial-gradient(circle at 50% 28%, rgba(255, 248, 237, .92), rgba(255, 248, 237, .54) 36%, rgba(36, 70, 61, .24) 100%),
+        radial-gradient(circle at 50% 28%, rgba(255, 248, 237, .94), rgba(255, 248, 237, .56) 36%, rgba(36, 70, 61, .24) 100%),
         rgba(36, 70, 61, .12);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       transition: opacity .55s ease;
     }
 
@@ -407,17 +479,15 @@
 
     .final-message {
       position: relative;
-      max-width: 310px;
-      padding: 26px 22px;
+      max-width: 340px;
+      padding: 28px 24px;
       border: 1px solid rgba(255, 248, 237, .78);
-      border-radius: 28px;
-      background: rgba(255, 248, 237, .82);
-      box-shadow:
-        0 28px 70px rgba(36, 70, 61, .24),
-        inset 0 0 0 1px rgba(255, 255, 255, .45);
+      border-radius: 30px;
+      background: rgba(255, 248, 237, .84);
+      box-shadow: 0 28px 70px rgba(36, 70, 61, .24), inset 0 0 0 1px rgba(255, 255, 255, .45);
       color: var(--green);
       font-size: 28px;
-      font-weight: 900;
+      font-weight: 950;
       line-height: 1.32;
       text-align: center;
       transform: translateY(30px) scale(.92);
@@ -427,38 +497,92 @@
       animation: finalPop .76s cubic-bezier(.18, .9, .24, 1.14) forwards;
     }
 
-    .final-message:before,
-    .final-message:after {
-      content: "";
-      position: absolute;
+    .history-list,
+    .settings-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+      max-height: calc(100vh - 220px);
+      overflow: auto;
+      padding-bottom: 20px;
+    }
+
+    .history-item,
+    .setting-row {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .62);
+      box-shadow: 0 14px 34px rgba(61, 46, 36, .08);
+      padding: 16px;
+    }
+
+    .history-date {
+      color: var(--green);
+      font-weight: 950;
+    }
+
+    .history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      padding: 6px 9px;
       border-radius: 999px;
-      background: rgba(191, 111, 103, .28);
-      filter: blur(.2px);
+      background: rgba(36, 70, 61, .09);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 850;
     }
 
-    .final-message:before {
-      width: 54px;
-      height: 20px;
-      left: -18px;
-      top: 22px;
-      transform: rotate(-26deg);
-    }
-
-    .final-message:after {
-      width: 66px;
-      height: 24px;
-      right: -24px;
-      bottom: 32px;
-      transform: rotate(23deg);
-      background: rgba(199, 154, 69, .28);
-    }
-
-    .reset {
-      margin-top: 18px;
+    .empty {
+      padding: 22px 0;
       color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .task-editor {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 850;
+    }
+
+    .small-danger {
+      color: var(--rose);
       background: transparent;
-      text-decoration: underline;
-      text-underline-offset: 4px;
+      font-weight: 950;
+    }
+
+    .cloud-note {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      z-index: 22;
+      padding: 11px 13px;
+      border: 1px solid rgba(197, 116, 111, .24);
+      border-radius: 16px;
+      color: #7f403d;
+      background: rgba(255, 248, 237, .82);
+      box-shadow: 0 16px 34px rgba(61, 46, 36, .1);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     @keyframes riseTask {
@@ -502,87 +626,138 @@
       }
     }
 
-    @media (max-width: 900px) {
-      .app-stage {
-        min-height: calc(100vh - 100px);
-      }
-    }
-
-    @media (max-width: 620px) {
-      .shell {
-        width: min(100% - 18px, 1120px);
-        padding: 18px 0 28px;
+    @media (min-width: 720px) {
+      body {
+        overflow: auto;
       }
 
-      .topbar {
-        margin-bottom: 12px;
+      .app {
+        min-height: 100vh;
       }
 
-      .phone {
-        width: 100%;
-        min-height: calc(100vh - 86px);
+      .view {
+        padding-left: max(20px, calc((100vw - 640px) / 2));
+        padding-right: max(20px, calc((100vw - 640px) / 2));
       }
 
-      .screen {
-        min-height: calc(100vh - 134px);
+      .to-diary {
+        left: 50%;
+        right: auto;
+        width: min(560px, calc(100% - 40px));
+        transform: translate(-50%, 22px);
       }
 
-      .streak {
-        font-size: 72px;
+      .to-diary.show {
+        transform: translate(-50%, 0);
+      }
+
+      .cloud-note {
+        left: 50%;
+        right: auto;
+        width: min(560px, calc(100% - 32px));
+        transform: translateX(-50%);
       }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
+  <main class="app">
     <header class="topbar">
-      <div class="brand"><span class="mark">E</span>EchoPal</div>
-      <a href="index.html">返回介绍页</a>
+      <a class="brand" href="index.html" aria-label="返回介绍页"><span class="mark">E</span>EchoPal</a>
+      <div class="nav-actions">
+        <button class="text-button hidden" id="todayNav">今日</button>
+        <button class="icon-button hidden" id="settingsNav" title="每日事项">＋</button>
+        <button class="icon-button hidden" id="historyNav" title="个人中心">人</button>
+        <button class="text-button hidden" id="signOut">退出</button>
+      </div>
     </header>
 
-    <div class="app-stage">
-      <main class="phone">
-        <div class="screen">
-          <section class="view check-view active" id="checkView">
-            <div class="date-pill" id="todayText">今天</div>
-            <h2 class="streak"><span id="streakCount">0</span> 天</h2>
-            <p class="streak-label" id="streakText">今天还没有打卡。</p>
-            <div class="check-card">
-              <button class="check-button" id="checkButton">
-                <span class="check-face">今日打卡</span>
-                <span class="check-face check-back">已完成</span>
-              </button>
-            </div>
-            <button class="reset" id="resetDemo">重置演示</button>
-          </section>
-
-          <section class="view tasks-view" id="tasksView">
-            <div class="screen-head">
-              <h2>今天的小事</h2>
-              <p>从底部升起来，完成哪件就点掉哪件。</p>
-            </div>
-            <div class="task-stream" id="taskStream"></div>
-            <button class="to-diary" id="toDiary">我完成了，记录下今天的感受吧</button>
-          </section>
-
-          <section class="view diary-view" id="diaryView">
-            <h2>今天的感受</h2>
-            <p>写一句也可以。真实比完整更重要。</p>
-            <textarea id="diaryText" placeholder="今天我感觉……"></textarea>
-            <button class="primary" id="saveDiary">保存今日感悟</button>
-            <div class="encourage" id="encourage">写完后，这里会出现一句鼓励。</div>
-          </section>
-
-          <section class="final-overlay" id="finalOverlay" aria-live="polite">
-            <div class="final-message">深夜里问题的答案坚如磐石，明天见。</div>
-          </section>
+    <section class="view auth-view active" id="authView">
+      <div class="auth-panel">
+        <span class="eyebrow">云端同步账号</span>
+        <h1>回来，记录今天。</h1>
+        <p>注册或登录后，你的打卡、每日事项、日记和历史记录会存到云端。换手机也能继续。</p>
+        <div class="form">
+          <input class="field" id="email" type="email" autocomplete="email" placeholder="邮箱">
+          <input class="field" id="password" type="password" autocomplete="current-password" placeholder="密码，至少 6 位">
+          <button class="primary" id="loginButton">登录</button>
+          <button class="ghost" id="signupButton">注册</button>
+          <button class="ghost" id="demoButton">先本机预览</button>
+          <div class="hint" id="authHint"></div>
         </div>
-      </main>
-    </div>
-  </div>
+      </div>
+    </section>
+
+    <section class="view check-view" id="checkView">
+      <div class="date-pill" id="todayText">今天</div>
+      <h2 class="streak"><span id="streakCount">0</span> 天</h2>
+      <p class="streak-label" id="streakText">今天还没有打卡。</p>
+      <div class="check-card">
+        <button class="check-button" id="checkButton">
+          <span class="check-face">今日打卡</span>
+          <span class="check-face check-back">已完成</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="view tasks-view" id="tasksView">
+      <div class="screen-head">
+        <span class="eyebrow">每日事项</span>
+        <h2>今天的小事</h2>
+        <p>从屏幕底部升起来。完成哪件，就点掉哪件。</p>
+      </div>
+      <div class="task-stream" id="taskStream"></div>
+      <button class="primary to-diary" id="toDiary">我完成了，记录下今天的感受吧</button>
+    </section>
+
+    <section class="view diary-view" id="diaryView">
+      <div class="diary-inner">
+        <span class="eyebrow">今日感受</span>
+        <h2>写一句也可以。</h2>
+        <p>真实比完整更重要。</p>
+        <textarea id="diaryText" placeholder="今天我感觉……"></textarea>
+        <button class="primary" id="saveDiary">保存今日感悟</button>
+        <div class="encourage" id="encourage">写完后，这里会出现一句鼓励。</div>
+      </div>
+    </section>
+
+    <section class="view history-view" id="historyView">
+      <div class="history-panel">
+        <span class="eyebrow">个人中心</span>
+        <h2>你的记录</h2>
+        <p>按日期查看以前写过的话、完成了哪些、还留下了哪些。</p>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </section>
+
+    <section class="view settings-view" id="settingsView">
+      <div class="settings-panel">
+        <span class="eyebrow">每日事项</span>
+        <h2>每天想做什么？</h2>
+        <p>这些事项会在每天打卡后出现。</p>
+        <div class="task-editor">
+          <input class="field" id="taskInput" placeholder="例如：读 10 分钟书">
+          <button class="primary" id="addTask">添加</button>
+        </div>
+        <div class="settings-list" id="settingsList"></div>
+      </div>
+    </section>
+
+    <section class="final-overlay" id="finalOverlay" aria-live="polite">
+      <div class="final-message">深夜里问题的答案坚如磐石，明天见。</div>
+    </section>
+
+    <div class="cloud-note hidden" id="cloudNote">Supabase 还没配置，当前是本机预览模式。配置后会自动使用云端登录和数据库。</div>
+  </main>
 
   <script>
-    const storageKey = "echopal-flow-state";
+    const SUPABASE_URL = "https://ktvaujawyxatzwsevgzb.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_tcA-aCRQ4iz4H-_qQeyeog_F3jzaSeY";
+    const hasSupabaseConfig = !SUPABASE_URL.includes("YOUR_PROJECT") && !SUPABASE_ANON_KEY.includes("YOUR_SUPABASE");
+    const cloudReady = hasSupabaseConfig && Boolean(window.supabase);
+    const db = cloudReady ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const storageKey = "echopal-demo-cloud-shape";
     const defaultTasks = ["记录一个灵感", "整理一件小事", "写下今天的感受"];
     const encouragements = [
       "今天你已经完成了一次很重要的回来。明天不用很厉害，只要继续出现。",
@@ -594,26 +769,32 @@
       "你给今天留了一盏灯。明天打开这里时，它还会亮着。"
     ];
 
-    let state = loadState();
+    let sessionUser = null;
+    let mode = cloudReady ? "cloud" : "demo";
+    let activeTaskIds = new Set();
+    let state = {
+      streak: 0,
+      checkedDate: "",
+      tasks: defaultTasks.map((text, index) => ({ id: `demo-${index}`, text, active: true })),
+      today: null,
+      history: [],
+      lastEncouragement: -1
+    };
 
-    function loadState() {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) return JSON.parse(saved);
-      return {
-        streak: 0,
-        checkedDate: "",
-        tasks: defaultTasks.map((text, index) => ({ id: Date.now() + index, text, done: false })),
-        diary: "",
-        lastEncouragement: -1
-      };
-    }
-
-    function saveState() {
-      localStorage.setItem(storageKey, JSON.stringify(state));
-    }
+    const $ = selector => document.querySelector(selector);
 
     function todayKey() {
       return new Date().toISOString().slice(0, 10);
+    }
+
+    function localState() {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+      return state;
+    }
+
+    function saveLocal() {
+      if (mode === "demo") localStorage.setItem(storageKey, JSON.stringify(state));
     }
 
     function setView(nextId) {
@@ -621,51 +802,114 @@
         view.classList.toggle("active", view.id === nextId);
         view.classList.remove("leaving");
       });
+      $("#toDiary").classList.remove("show");
     }
 
     function transitionTo(currentId, nextId, delay = 420) {
-      const current = document.querySelector(`#${currentId}`);
+      const current = $(`#${currentId}`);
       if (current) current.classList.add("leaving");
       setTimeout(() => setView(nextId), delay);
     }
 
+    function showAppNav(show) {
+      ["#todayNav", "#settingsNav", "#historyNav", "#signOut"].forEach(id => $(id).classList.toggle("hidden", !show));
+      $("#cloudNote").classList.toggle("hidden", mode !== "demo" || !show);
+    }
+
+    function setAuthHint(text) {
+      $("#authHint").textContent = text || "";
+    }
+
+    function randomEncouragement() {
+      let next = Math.floor(Math.random() * encouragements.length);
+      if (encouragements.length > 1) {
+        while (next === state.lastEncouragement) next = Math.floor(Math.random() * encouragements.length);
+      }
+      state.lastEncouragement = next;
+      return encouragements[next];
+    }
+
+    function calculateStreak(history) {
+      const days = new Set(history.filter(item => item.checked_at).map(item => item.entry_date));
+      let count = 0;
+      const cursor = new Date();
+      while (true) {
+        const key = cursor.toISOString().slice(0, 10);
+        if (!days.has(key)) break;
+        count += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return count;
+    }
+
+    async function loadCloudData() {
+      const [{ data: plans, error: planError }, { data: entries, error: entryError }] = await Promise.all([
+        db.from("daily_plans").select("*").eq("user_id", sessionUser.id).eq("active", true).order("created_at"),
+        db.from("daily_entries").select("*").eq("user_id", sessionUser.id).order("entry_date", { ascending: false })
+      ]);
+      if (planError || entryError) throw planError || entryError;
+      if (!plans.length) {
+        const rows = defaultTasks.map(text => ({ user_id: sessionUser.id, text, active: true }));
+        const { data, error } = await db.from("daily_plans").insert(rows).select("*");
+        if (error) throw error;
+        state.tasks = data;
+      } else {
+        state.tasks = plans;
+      }
+      state.history = entries || [];
+      state.today = state.history.find(item => item.entry_date === todayKey()) || null;
+      state.checkedDate = state.today?.checked_at ? todayKey() : "";
+      state.streak = calculateStreak(state.history);
+    }
+
+    function loadDemoData() {
+      state = localState();
+      state.history ||= [];
+      state.tasks ||= defaultTasks.map((text, index) => ({ id: `demo-${index}`, text, active: true }));
+      state.today = state.history.find(item => item.entry_date === todayKey()) || null;
+      state.checkedDate = state.today?.checked_at ? todayKey() : state.checkedDate || "";
+      state.streak = calculateStreak(state.history);
+    }
+
+    async function refreshData() {
+      if (mode === "cloud") await loadCloudData();
+      else loadDemoData();
+      renderCheck();
+      renderSettings();
+    }
+
     function renderCheck() {
       const checked = state.checkedDate === todayKey();
-      document.querySelector("#streakCount").textContent = state.streak;
-      document.querySelector("#streakText").textContent = checked ? "今天已经回来过了。" : "今天还没有打卡。";
-      document.querySelector("#checkButton").classList.toggle("done", checked);
-      document.querySelector("#checkButton").classList.toggle("fading", checked);
-      document.querySelector("#diaryText").value = state.diary || "";
-      saveState();
+      $("#streakCount").textContent = state.streak || 0;
+      $("#streakText").textContent = checked ? "今天已经回来过了。" : "今天还没有打卡。";
+      $("#checkButton").classList.toggle("done", checked);
+      $("#checkButton").classList.remove("fading");
+      $("#diaryText").value = state.today?.diary || "";
+      saveLocal();
     }
 
     function renderTasks() {
-      const stream = document.querySelector("#taskStream");
+      const stream = $("#taskStream");
       stream.innerHTML = "";
-      state.tasks.forEach((task, index) => {
-        const row = document.createElement("label");
+      activeTaskIds = new Set(state.tasks.filter(task => task.active !== false).map(task => String(task.id)));
+      state.tasks.filter(task => task.active !== false).forEach((task, index) => {
+        const row = document.createElement("button");
         row.className = "task-card";
-        row.style.setProperty("--delay", `${index * 160}ms`);
-        row.style.setProperty("--rise", `${-168 - index * 82}px`);
-        row.innerHTML = `<input type="checkbox" aria-label="完成"><span>${task.text}</span>`;
-        row.addEventListener("click", event => {
-          event.preventDefault();
-          completeTask(row, task.id);
-        });
+        row.type = "button";
+        row.style.setProperty("--delay", `${index * 150}ms`);
+        row.style.setProperty("--rise", `${-170 - index * 84}px`);
+        row.innerHTML = `<span class="task-dot"></span><span>${task.text}</span>`;
+        row.addEventListener("click", () => completeTask(row, String(task.id)));
         stream.appendChild(row);
       });
-      const showDelay = Math.max(760, state.tasks.length * 160 + 560);
-      setTimeout(() => document.querySelector("#toDiary").classList.add("show"), showDelay);
+      const showDelay = Math.max(760, activeTaskIds.size * 160 + 560);
+      setTimeout(() => $("#toDiary").classList.add("show"), showDelay);
     }
 
     function completeTask(row, id) {
       if (row.dataset.completed === "true") return;
       row.dataset.completed = "true";
-      const checkbox = row.querySelector("input");
-      if (checkbox) {
-        checkbox.checked = true;
-        checkbox.disabled = true;
-      }
+      activeTaskIds.delete(id);
       for (let i = 0; i < 56; i++) {
         const particle = document.createElement("span");
         particle.className = "particle";
@@ -680,76 +924,224 @@
         row.appendChild(particle);
       }
       row.classList.add("completed");
-      setTimeout(() => {
-        state.tasks = state.tasks.filter(task => task.id !== id);
-        saveState();
-        row.remove();
-      }, 560);
+      setTimeout(() => row.remove(), 560);
     }
 
-    function randomEncouragement() {
-      let next = Math.floor(Math.random() * encouragements.length);
-      if (encouragements.length > 1) {
-        while (next === state.lastEncouragement) {
-          next = Math.floor(Math.random() * encouragements.length);
-        }
+    function currentTaskSummary() {
+      const all = state.tasks.filter(task => task.active !== false);
+      const completed = all.filter(task => !activeTaskIds.has(String(task.id))).map(task => task.text);
+      const missed = all.filter(task => activeTaskIds.has(String(task.id))).map(task => task.text);
+      return { completed, missed };
+    }
+
+    async function saveToday(patch) {
+      const date = todayKey();
+      const base = {
+        entry_date: date,
+        checked_at: state.checkedDate === date ? new Date().toISOString() : null,
+        diary: state.today?.diary || "",
+        encouragement: state.today?.encouragement || "",
+        completed_tasks: state.today?.completed_tasks || [],
+        missed_tasks: state.today?.missed_tasks || []
+      };
+      const next = { ...base, ...patch };
+      if (mode === "cloud") {
+        const { data, error } = await db
+          .from("daily_entries")
+          .upsert({ ...next, user_id: sessionUser.id }, { onConflict: "user_id,entry_date" })
+          .select("*")
+          .single();
+        if (error) throw error;
+        state.today = data;
+        state.history = [data, ...state.history.filter(item => item.entry_date !== date)];
+      } else {
+        state.today = { id: `demo-${date}`, ...next };
+        state.history = [state.today, ...state.history.filter(item => item.entry_date !== date)];
+        saveLocal();
       }
-      state.lastEncouragement = next;
-      return encouragements[next];
+      state.streak = calculateStreak(state.history);
+      renderCheck();
     }
 
-    document.querySelector("#todayText").textContent = new Intl.DateTimeFormat("zh-CN", {
-      month: "long",
-      day: "numeric",
-      weekday: "long"
-    }).format(new Date());
-
-    document.querySelector("#checkButton").addEventListener("click", () => {
+    async function handleCheckIn() {
       if (state.checkedDate === todayKey()) {
         transitionTo("checkView", "tasksView");
         setTimeout(renderTasks, 480);
         return;
       }
       state.checkedDate = todayKey();
-      state.streak += 1;
-      saveState();
+      await saveToday({ checked_at: new Date().toISOString() });
       renderCheck();
-      setTimeout(() => document.querySelector("#checkButton").classList.add("fading"), 760);
+      setTimeout(() => $("#checkButton").classList.add("fading"), 760);
       setTimeout(() => {
         transitionTo("checkView", "tasksView", 320);
         setTimeout(renderTasks, 360);
       }, 1180);
-    });
+    }
 
-    document.querySelector("#toDiary").addEventListener("click", () => {
-      document.querySelector("#toDiary").classList.remove("show");
-      transitionTo("tasksView", "diaryView");
-    });
+    async function handleSaveDiary() {
+      const text = $("#diaryText").value.trim();
+      const message = text ? randomEncouragement() : "哪怕只写一句也可以。今天先到这里，明天继续。";
+      const summary = currentTaskSummary();
+      $("#encourage").textContent = message;
+      $("#encourage").classList.add("show");
+      await saveToday({
+        diary: text,
+        encouragement: message,
+        completed_tasks: summary.completed,
+        missed_tasks: summary.missed
+      });
+      setTimeout(() => $("#finalOverlay").classList.add("show"), 900);
+    }
 
-    document.querySelector("#saveDiary").addEventListener("click", () => {
-      const text = document.querySelector("#diaryText").value.trim();
-      state.diary = text;
-      const encourage = document.querySelector("#encourage");
-      encourage.textContent = text ? randomEncouragement() : "哪怕只写一句也可以。今天先到这里，明天继续。";
-      encourage.classList.add("show");
-      saveState();
-      setTimeout(() => {
-        document.querySelector("#finalOverlay").classList.add("show");
-      }, 900);
-    });
+    function renderHistory() {
+      const list = $("#historyList");
+      list.innerHTML = "";
+      if (!state.history.length) {
+        list.innerHTML = `<div class="empty">还没有历史记录。完成今天之后，这里会慢慢长出来。</div>`;
+        return;
+      }
+      state.history.forEach(item => {
+        const row = document.createElement("article");
+        row.className = "history-item";
+        const completed = item.completed_tasks || [];
+        const missed = item.missed_tasks || [];
+        row.innerHTML = `
+          <div class="history-date">${item.entry_date}</div>
+          <p>${item.diary || "这一天还没有写下感受。"}</p>
+          <div class="history-meta">
+            <span class="pill">完成 ${completed.length}</span>
+            <span class="pill">未完成 ${missed.length}</span>
+            <span class="pill">${item.checked_at ? "已打卡" : "未打卡"}</span>
+          </div>
+          <p>${completed.length ? `完成：${completed.join("、")}` : "完成：暂无"}</p>
+          <p>${missed.length ? `未完成：${missed.join("、")}` : "未完成：暂无"}</p>
+        `;
+        list.appendChild(row);
+      });
+    }
 
-    document.querySelector("#resetDemo").addEventListener("click", () => {
-      localStorage.removeItem(storageKey);
-      state = loadState();
-      document.querySelector("#checkButton").classList.remove("done", "fading");
-      document.querySelector("#toDiary").classList.remove("show");
-      document.querySelector("#encourage").classList.remove("show");
-      document.querySelector("#finalOverlay").classList.remove("show");
+    function renderSettings() {
+      const list = $("#settingsList");
+      list.innerHTML = "";
+      state.tasks.filter(task => task.active !== false).forEach(task => {
+        const row = document.createElement("div");
+        row.className = "setting-row";
+        row.innerHTML = `<span>${task.text}</span><button class="small-danger">删除</button>`;
+        row.querySelector("button").addEventListener("click", () => deleteTask(task.id));
+        list.appendChild(row);
+      });
+    }
+
+    async function addTask() {
+      const input = $("#taskInput");
+      const text = input.value.trim();
+      if (!text) return;
+      if (mode === "cloud") {
+        const { data, error } = await db.from("daily_plans").insert({ user_id: sessionUser.id, text, active: true }).select("*").single();
+        if (error) throw error;
+        state.tasks.push(data);
+      } else {
+        state.tasks.push({ id: `demo-${Date.now()}`, text, active: true });
+        saveLocal();
+      }
+      input.value = "";
+      renderSettings();
+    }
+
+    async function deleteTask(id) {
+      if (mode === "cloud") {
+        const { error } = await db.from("daily_plans").update({ active: false }).eq("id", id).eq("user_id", sessionUser.id);
+        if (error) throw error;
+      }
+      state.tasks = state.tasks.filter(task => String(task.id) !== String(id));
+      saveLocal();
+      renderSettings();
+    }
+
+    async function startApp(nextMode = mode) {
+      mode = nextMode;
+      showAppNav(true);
+      await refreshData();
       setView("checkView");
-      renderCheck();
+    }
+
+    async function auth(action) {
+      if (!cloudReady) {
+        setAuthHint("还没配置 Supabase。现在可以先本机预览，之后我帮你接云端。");
+        return;
+      }
+      const email = $("#email").value.trim();
+      const password = $("#password").value;
+      if (!email || password.length < 6) {
+        setAuthHint("请输入邮箱和至少 6 位密码。");
+        return;
+      }
+      setAuthHint("处理中……");
+      const result = action === "signup"
+        ? await db.auth.signUp({ email, password })
+        : await db.auth.signInWithPassword({ email, password });
+      if (result.error) {
+        setAuthHint(result.error.message);
+        return;
+      }
+      if (action === "signup" && !result.data.session) {
+        setAuthHint("注册成功。请先到邮箱确认账号，然后回来登录。");
+        return;
+      }
+      sessionUser = result.data.user;
+      setAuthHint("");
+      await startApp("cloud");
+    }
+
+    $("#todayText").textContent = new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    }).format(new Date());
+
+    $("#loginButton").addEventListener("click", () => auth("login"));
+    $("#signupButton").addEventListener("click", () => auth("signup"));
+    $("#demoButton").addEventListener("click", () => startApp("demo"));
+    $("#checkButton").addEventListener("click", () => handleCheckIn().catch(error => setAuthHint(error.message)));
+    $("#toDiary").addEventListener("click", () => transitionTo("tasksView", "diaryView"));
+    $("#saveDiary").addEventListener("click", () => handleSaveDiary().catch(error => alert(error.message)));
+    $("#historyNav").addEventListener("click", async () => {
+      await refreshData();
+      renderHistory();
+      setView("historyView");
+    });
+    $("#settingsNav").addEventListener("click", () => {
+      renderSettings();
+      setView("settingsView");
+    });
+    $("#todayNav").addEventListener("click", () => {
+      $("#finalOverlay").classList.remove("show");
+      setView("checkView");
+    });
+    $("#addTask").addEventListener("click", () => addTask().catch(error => alert(error.message)));
+    $("#signOut").addEventListener("click", async () => {
+      if (mode === "cloud") await db.auth.signOut();
+      sessionUser = null;
+      showAppNav(false);
+      setView("authView");
+    });
+    $("#finalOverlay").addEventListener("click", () => {
+      $("#finalOverlay").classList.remove("show");
+      renderHistory();
+      setView("historyView");
     });
 
-    renderCheck();
+    (async function boot() {
+      $("#demoButton").classList.toggle("hidden", cloudReady);
+      if (!cloudReady) {
+        $("#cloudNote").classList.remove("hidden");
+        return;
+      }
+      const { data } = await db.auth.getSession();
+      sessionUser = data.session?.user || null;
+      if (sessionUser) await startApp("cloud");
+    })();
   </script>
 </body>
 </html>
