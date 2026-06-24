@@ -1,6 +1,6 @@
-# EchoPal
+# 树洞
 
-EchoPal 是一个轻量的每日记录产品原型。
+树洞是一个轻量的每日记录产品原型。
 
 - `index.html`: 产品介绍页
 - `echopal-app.html`: 产品界面
